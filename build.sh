@@ -11,7 +11,7 @@ WINDOWS_USER="$WINDOWS_USER"
 WINDOWS_IP="$WINDOWS_IP"
 WINDOWS_PASSWORD="$WINDOWS_PASSWORD"
 CODEBASE_DIR="$CODEBASE_DIR"
-ARTIFACTS_PATH="$ARTIFACTS_PATH"
+REMOTE_TARGET_PATH="$REMOTE_TARGET_PATH"
 
 ENV="$ENV"
 CODEBASE_LOCATION="${WORKSPACE}"/"${CODEBASE_DIR}"
@@ -20,7 +20,7 @@ sleep $SLEEP_DURATION
 logInfoMessage "I'll do processing at [$CODEBASE_LOCATION]"
 cd "${CODEBASE_LOCATION}"
 
-COMPLETED_PATH="$ARTIFACTS_PATH/$ENV"
+COMPLETED_PATH="$REMOTE_TARGET_PATH/$ENV"
 logInfoMessage "Complete path to Codebases: [$COMPLETED_PATH]"
 
 WINDOWS_PATH=$(echo "$COMPLETED_PATH" | sed 's#\\#/#g')
@@ -29,10 +29,10 @@ logInfoMessage "Windows IP: $WINDOWS_IP"
 logInfoMessage "Windows path: $WINDOWS_PATH"
 
 
-if [ -n "$LOCAL_COPIED_ARTIFACT" ] && [ -e "$LOCAL_COPIED_ARTIFACT" ]; then
-    logInfoMessage "LOCAL_COPIED_ARTIFACT exists: $LOCAL_COPIED_ARTIFACT"
+if [ -n "$LOCAL_FILE_PATH" ] && [ -e "$LOCAL_FILE_PATH" ]; then
+    logInfoMessage "LOCAL_FILE_PATH exists: $LOCAL_FILE_PATH"
 else
-    logErrorMessage "LOCAL_COPIED_ARTIFACT not found or not provided"
+    logErrorMessage "LOCAL_FILE_PATH not found or not provided"
     exit 1
 fi
 
@@ -47,7 +47,7 @@ else
 fi
 
 logInfoMessage "I have started copying the Codebase to [$WINDOWS_PATH]"
-sshpass -p "$WINDOWS_PASSWORD" scp -r -o StrictHostKeyChecking=no "$LOCAL_COPIED_ARTIFACT" "$WINDOWS_USER@$WINDOWS_IP:$WINDOWS_PATH\\"
+sshpass -p "$WINDOWS_PASSWORD" scp -r -o StrictHostKeyChecking=no "$LOCAL_FILE_PATH" "$WINDOWS_USER@$WINDOWS_IP:$WINDOWS_PATH\\"
 logInfoMessage "Codebase copy completed to [$WINDOWS_PATH]"
 
 TASK_STATUS=$?
