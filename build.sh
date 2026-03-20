@@ -84,6 +84,11 @@ TARGET_IP="$TARGET_IP"
 SOURCE_PATH="${WORKSPACE}/$SOURCE_PATH"
 DEST_PATH="$DEST_PATH"
 
+if [ -z "$TARGET_USERNAME" ] || [ -z "$TARGET_IP" ] || [ -z "$TARGET_PASSWORD" ]; then
+  logErrorMessage "Target Server credentials are missing"
+  exit 1
+fi
+
 CODEBASE_LOCATION="${WORKSPACE}"/"${CODEBASE_DIR}"
 
 sleep $SLEEP_DURATION
@@ -95,8 +100,8 @@ logInfoMessage "Complete path to Codebases: [$COMPLETED_PATH]"
 
 WINDOWS_PATH=$(echo "$COMPLETED_PATH" | sed 's#\\#/#g')
 
-logInfoMessage "Windows IP: $TARGET_IP"
-logInfoMessage "Windows path: $WINDOWS_PATH"
+logInfoMessage "Target Server IP: $TARGET_IP"
+logInfoMessage "Target Server path: $WINDOWS_PATH"
 
 
 if [ -n "$SOURCE_PATH" ] && [ -e "$SOURCE_PATH" ]; then
