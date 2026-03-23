@@ -103,28 +103,44 @@ WINDOWS_PATH=$(echo "$COMPLETED_PATH" | sed 's#\\#/#g')
 logInfoMessage "Target Server IP: $TARGET_IP"
 logInfoMessage "Target Server path: $WINDOWS_PATH"
 
-
 if [ -n "$SOURCE_PATH" ] && [ -e "$SOURCE_PATH" ]; then
     logInfoMessage "SOURCE_PATH exists: $SOURCE_PATH"
+    add_event "FETCHING SOURCE DETAILS" "Successful" "SOURCE_PATH found" "SOURCE_PATH: $SOURCE_PATH"
 else
     logErrorMessage "SOURCE_PATH not found or not provided"
+    add_event "FETCHING SOURCE DETAILS" "Failed" "SOURCE_PATH not found or not provided" "SOURCE_PATH: $SOURCE_PATH"
     exit 1
 fi
+
+if [ -n "$TARGET_IP" ] && [ -n "$WINDOWS_PATH" ]; then
+    logInfoMessage "I have all the details to copy the codebase to target server"
+    add_event "FETCHING TARGET DETAILS" "Successful" "Target server details IP: $TARGET_IP" "Target Path: $WINDOWS_PATH"
+else
+    logErrorMessage "Target Server details are missing"
+    add_event "FETCHING TARGET DETAILS" "Failed" "Remote execution failed due to missing target server details" "Target Server IP: $TARGET_IP, Target Path: $WINDOWS_PATH"
+    exit 1
+fi
+
 
 if [ "$CLEAN_OLD_DIR" = "true" ]; then
   sshpass -p "$TARGET_PASSWORD" ssh -o StrictHostKeyChecking=no "$TARGET_USERNAME@$TARGET_IP" \
   "powershell -NoProfile -ExecutionPolicy Bypass -Command \"if (Test-Path '$WINDOWS_PATH') { Remove-Item -Recurse -Force '$WINDOWS_PATH' -ErrorAction SilentlyContinue }; New-Item -ItemType Directory -Force -Path '$WINDOWS_PATH'\""
   logInfoMessage "Cleaned and created directory [$WINDOWS_PATH]"
+  add_event "CLEANUP" "Successful" "Application Old directory removed from target server" "Application Old Directory cleanup and recreated at $WINDOWS_PATH"
+
 else
   logWarningMessage "CLEAN_OLD_DIR is not set to true, skipping directory cleanup"
+  add_event "CLEANUP" "Skipping" "Directory cleanup skipped as CLEAN_OLD_DIR is not set to true" "Directory cleanup skipped for $WINDOWS_PATH"
 fi
 
 logInfoMessage "I have started copying the Codebase to [$WINDOWS_PATH]"
 if sshpass -f <(echo "$TARGET_PASSWORD") scp -o StrictHostKeyChecking=no -r "$SOURCE_PATH" "$TARGET_USERNAME@$TARGET_IP:$WINDOWS_PATH"; then
     logInfoMessage "Codebase copy completed successfully"
+    add_event "CODEBASE COPY" "Successful" "Latest Codebase copied to target server" "Latest Codebase copied from $SOURCE_PATH to $WINDOWS_PATH"
     TASK_STATUS=0
 else
     logErrorMessage "Codebase copy failed to [$WINDOWS_PATH] either due to connectivity issues or authentication failure"
+    add_event "CODEBASE COPY" "Failed" "Latest Codebase copy failed" "Attempted to copy from $SOURCE_PATH to $WINDOWS_PATH"
     TASK_STATUS=1
 fi
 
