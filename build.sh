@@ -104,20 +104,20 @@ logInfoMessage "Target Server IP: $TARGET_IP"
 logInfoMessage "Target Server path: $WINDOWS_PATH"
 
 if [ -n "$SOURCE_PATH" ] && [ -e "$SOURCE_PATH" ]; then
-    logInfoMessage "SOURCE_PATH exists: $SOURCE_PATH"
-    add_event "FETCHING SOURCE DETAILS" "Successful" "SOURCE_PATH found" "SOURCE_PATH: $SOURCE_PATH"
+    logInfoMessage "Source path exists: $SOURCE_PATH"
+    add_event "FETCH SOURCE DETAILS" "Successful" "Validated source path for processing" "SOURCE PATH: $SOURCE_PATH"
 else
-    logErrorMessage "SOURCE_PATH not found or not provided"
-    add_event "FETCHING SOURCE DETAILS" "Failed" "SOURCE_PATH not found or not provided" "SOURCE_PATH: $SOURCE_PATH"
+    logErrorMessage "Source path not found or not provided"
+    add_event "FETCH SOURCE DETAILS" "Failed" "Source path validation failed, cannot proceed with codebase copy" "SOURCE PATH: $SOURCE_PATH"
     exit 1
 fi
 
 if [ -n "$TARGET_IP" ] && [ -n "$WINDOWS_PATH" ]; then
     logInfoMessage "I have all the details to copy the codebase to target server"
-    add_event "FETCHING TARGET DETAILS" "Successful" "Target server details IP: $TARGET_IP" "Target Path: $WINDOWS_PATH"
+    add_event "FETCHING TARGET DETAILS" "Successful" "Target server and path identified" "Target server IP is: $TARGET_IP, and Target Path: $WINDOWS_PATH"
 else
     logErrorMessage "Target Server details are missing"
-    add_event "FETCHING TARGET DETAILS" "Failed" "Remote execution failed due to missing target server details" "Target Server IP: $TARGET_IP, Target Path: $WINDOWS_PATH"
+    add_event "FETCHING TARGET DETAILS" "Failed" "Target server details are missing" "Target Server IP: $TARGET_IP, Target Path: $WINDOWS_PATH"
     exit 1
 fi
 
@@ -126,11 +126,11 @@ if [ "$CLEAN_OLD_DIR" = "true" ]; then
   sshpass -p "$TARGET_PASSWORD" ssh -o StrictHostKeyChecking=no "$TARGET_USERNAME@$TARGET_IP" \
   "powershell -NoProfile -ExecutionPolicy Bypass -Command \"if (Test-Path '$WINDOWS_PATH') { Remove-Item -Recurse -Force '$WINDOWS_PATH' -ErrorAction SilentlyContinue }; New-Item -ItemType Directory -Force -Path '$WINDOWS_PATH'\""
   logInfoMessage "Cleaned and created directory [$WINDOWS_PATH]"
-  add_event "CLEANUP" "Successful" "Application Old directory removed from target server" "Application Old Directory cleanup and recreated at $WINDOWS_PATH"
+  add_event "TARGET CLEANUP" "Successful" "Target directory cleanup completed" "Old application directory removed and reinitialized at $WINDOWS_PATH"
 
 else
   logWarningMessage "CLEAN_OLD_DIR is not set to true, skipping directory cleanup"
-  add_event "CLEANUP" "Skipping" "Directory cleanup skipped as CLEAN_OLD_DIR is not set to true" "Directory cleanup skipped for $WINDOWS_PATH"
+  add_event "CLEANUP" "Successful" "Directory cleanup skipped as CLEAN_OLD_DIR is not set to true" "Directory cleanup skipped for $WINDOWS_PATH"
 fi
 
 logInfoMessage "I have started copying the Codebase to [$WINDOWS_PATH]"
@@ -144,5 +144,4 @@ else
     TASK_STATUS=1
 fi
 
-TASK_STATUS=$?
 saveTaskStatus ${TASK_STATUS} ${ACTIVITY_SUB_TASK_CODE}
