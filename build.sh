@@ -109,6 +109,8 @@ if [ -n "$SOURCE_PATH" ] && [ -e "$SOURCE_PATH" ]; then
 else
     logErrorMessage "Source path not found or not provided"
     add_event "FETCH SOURCE DETAILS" "Failed" "Source path validation failed, cannot proceed with codebase copy" "SOURCE PATH: $SOURCE_PATH"
+    pwd 
+    ls -la "$WORKSPACE"
     exit 1
 fi
 
