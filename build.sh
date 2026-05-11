@@ -14,9 +14,11 @@ import os, json
 from cryptography.fernet import Fernet
 
 data = json.loads(os.environ['CREDENTIAL_MANAGEMENT'])
-fernet = Fernet(os.environ['FERNET_KEY'].encode())
 
 integration = next(iter(data.values()))
+
+fernet = Fernet(os.environ['FERNET_KEY'].encode())
+
 val = integration.get("CREDENTIAL_USERNAME")
 
 if val:
@@ -31,9 +33,11 @@ import os, json
 from cryptography.fernet import Fernet
 
 data = json.loads(os.environ['CREDENTIAL_MANAGEMENT'])
-fernet = Fernet(os.environ['FERNET_KEY'].encode())
 
 integration = next(iter(data.values()))
+
+fernet = Fernet(os.environ['FERNET_KEY'].encode())
+
 val = integration.get("CREDENTIAL_PASSWORD")
 
 if val:
@@ -48,9 +52,11 @@ import os, json
 from cryptography.fernet import Fernet
 
 data = json.loads(os.environ['CREDENTIAL_MANAGEMENT'])
-fernet = Fernet(os.environ['FERNET_KEY'].encode())
 
 integration = next(iter(data.values()))
+
+fernet = Fernet(os.environ['FERNET_KEY'].encode())
+
 val = integration.get("CREDENTIAL_ACCESS_TOKEN_OR_KEY")
 
 if val:
