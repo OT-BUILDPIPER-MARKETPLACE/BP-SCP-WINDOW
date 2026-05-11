@@ -16,7 +16,8 @@ from cryptography.fernet import Fernet
 data = json.loads(os.environ['CREDENTIAL_MANAGEMENT'])
 fernet = Fernet(os.environ['FERNET_KEY'].encode())
 
-val = data["integration_1"].get("CREDENTIAL_USERNAME")
+integration = next(iter(data.values()))
+val = integration.get("CREDENTIAL_USERNAME")
 
 if val:
     print(fernet.decrypt(val.encode()).decode())
@@ -32,7 +33,8 @@ from cryptography.fernet import Fernet
 data = json.loads(os.environ['CREDENTIAL_MANAGEMENT'])
 fernet = Fernet(os.environ['FERNET_KEY'].encode())
 
-val = data["integration_1"].get("CREDENTIAL_PASSWORD")
+integration = next(iter(data.values()))
+val = integration.get("CREDENTIAL_PASSWORD")
 
 if val:
     print(fernet.decrypt(val.encode()).decode())
@@ -48,7 +50,8 @@ from cryptography.fernet import Fernet
 data = json.loads(os.environ['CREDENTIAL_MANAGEMENT'])
 fernet = Fernet(os.environ['FERNET_KEY'].encode())
 
-val = data["integration_1"].get("CREDENTIAL_ACCESS_TOKEN_OR_KEY")
+integration = next(iter(data.values()))
+val = integration.get("CREDENTIAL_ACCESS_TOKEN_OR_KEY")
 
 if val:
     print(fernet.decrypt(val.encode()).decode())
@@ -62,7 +65,8 @@ import os, json
 
 data = json.loads(os.environ['CREDENTIAL_MANAGEMENT'])
 
-val = data["integration_1"].get("CREDENTIAL_KEY_VALUE_PAIR")
+integration = next(iter(data.values()))
+val = integration.get("CREDENTIAL_KEY_VALUE_PAIR")
 
 print("" if val is None else val)
 PY
